@@ -1,0 +1,26 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Common User App",
+    "description": "This is a sample server for a pet store.",
+    "termsOfService": "http://example.com/terms/",
+    "contact": {
+      "name": "API Support",
+      "url": "http://www.example.com/support",
+      "email": "support@example.com"
+    },
+    "version": "1.0.1"
+  },
+
+  "servers": [
+    {
+      "url": "http://localhost:3333/api-documentation",
+      "description": "test"
+    }
+  ],
+
+  "license": {
+    "name": "Apache 2.0",
+    "url": "https://www.apache.org/licenses/LICENSE-2.0.html"
+  }
+}

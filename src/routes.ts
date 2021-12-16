@@ -1,23 +1,46 @@
 import { Router } from "express";
-import CreateUserController from "./controllers/createUser.controller";
-import ListUsersController from "./controllers/listUsers.controller";
-import UpdateUsersController from "./controllers/updateUser.controller";
-import DeleteUsersController from "./controllers/deleteUser.controller";
-import UserLoginController from "./controllers/userLogin.controller";
-import authenticateUser from "./middlewares/authenticateUser.middleware";
+import { v4 as uuid } from "uuid";
+import { isAuthenticated } from "./midleware";
 
 const router = Router();
 
-const createUserController = new CreateUserController();
-const listUsersController = new ListUsersController();
-const updateUsersController = new UpdateUsersController();
-const deleteUsersController = new DeleteUsersController();
-const userLoginController = new UserLoginController();
+interface User {
+  name: string;
+  email: string;
+  id: string;
+}
 
-router.post("/users", createUserController.handle);
-router.get("/users", listUsersController.handle);
-router.patch("/users/:id", authenticateUser, updateUsersController.handle);
-router.delete("/users/:id", authenticateUser, deleteUsersController.handle);
-router.post("/login", userLoginController.handle);
+const users: User[] = [];
 
-export default router;
+router.get("/users/findByName", (request, response) => {
+  const { name } = request.query;
+  const user = users.filter((u) => u.name.includes(String(name)));
+  return response.json(user);
+});
+
+router.get("/users/:id", (request, response) => {
+  const { id } = request.params;
+  const user = users.find((user) => user.id === id);
+  return response.json(user);
+});
+
+router.post("/users", isAuthenticated, (request, response) => {
+  const { name, email, id } = request.body;
+
+  const userAlreadyExists = users.find((user) => user.name === name);
+
+  if (userAlreadyExists) {
+    return response.status(400).json({ message: "User already exists!" });
+  }
+
+  const user: User = {
+    name,
+    email,
+    id: uuid(),
+  };
+
+  users.push(user);
+
+  return response.json(user);
+});
+export { router };
